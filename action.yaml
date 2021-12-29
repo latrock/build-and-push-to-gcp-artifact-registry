@@ -23,7 +23,7 @@ runs:
       shell: bash
       run: docker build -t ${{ inputs.image-name }}:latest .
     - name: Setup GCP SDK and Docker Client
-      uses: latrock/gcp-artifact-registry-auth@v0.1.1
+      uses: latrock/gcp-artifact-registry-auth@v0.1.2
       with:
         gcp-sa-creds-json: ${{ inputs.gcp-sa-creds-json }}
         registry: ${{ inputs.registry }}
@@ -32,5 +32,5 @@ runs:
       run: |-
         docker tag ${{ inputs.image-name }}:latest ${{ inputs.registry }}/$GCP_PROJECT/${{ inputs.repository }}/${{ inputs.image-name }}:latest
         docker tag ${{ inputs.image-name }}:latest ${{ inputs.registry }}/$GCP_PROJECT/${{ inputs.repository }}/${{ inputs.image-name }}:$GITHUB_SHA
-        docker push ${{ inputs.repository }}/$GCP_PROJECT/${{ inputs.repository }}/${{ inputs.image-name }}:latest
-        docker push ${{ inputs.repository }}/$GCP_PROJECT/${{ inputs.repository }}/${{ inputs.image-name }}:$GITHUB_SHA
+        docker push ${{ inputs.registry }}/$GCP_PROJECT/${{ inputs.repository }}/${{ inputs.image-name }}:latest
+        docker push ${{ inputs.registry }}/$GCP_PROJECT/${{ inputs.repository }}/${{ inputs.image-name }}:$GITHUB_SHA

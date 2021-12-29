@@ -17,16 +17,16 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup GCP SDK and Docker Client
-      uses: latrock/gcp-artifact-registry-auth@v0.1.1
-      with:
-        gcp-sa-creds-json: ${{ inputs.gcp-sa-creds-json }}
-        registry: ${{ inputs.registry }}
     - name: Checkout
       uses: actions/checkout@v2
     - name: Build Docker Image
       shell: bash
       run: docker build -t ${{ inputs.image-name }}:latest .
+    - name: Setup GCP SDK and Docker Client
+      uses: latrock/gcp-artifact-registry-auth@v0.1.1
+      with:
+        gcp-sa-creds-json: ${{ inputs.gcp-sa-creds-json }}
+        registry: ${{ inputs.registry }}
     - name: Push Docker Image to Artifact Registry
       shell: bash
       run: |-

@@ -1,0 +1,36 @@
+name: Build and Push to GCP Artifact Registry
+description: Build a Docker image and push it to the specified GCP Artifact Registry
+inputs:
+  gcp-sa-creds-json:
+    description: The Google Cloud JSON service account key to use for authentication
+    required: true
+  registry:
+    description: GCP Artifact Registry
+    required: true
+    default: europe-west3-docker.pkg.dev
+  repository:
+    description: Image repository
+    required: true
+  image-name:
+    description: Image name
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Setup GCP SDK and Docker Client
+      uses: latrock/gcp-artifact-registry-auth@v0.1.1
+      with:
+        gcp-sa-creds-json: ${{ inputs.gcp-sa-creds-json }}
+        registry: ${{ inputs.registry }}
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Build Docker Image
+      shell: bash
+      run: docker build -t ${{ inputs.image-name }}:latest .
+    - name: Push Docker Image to Artifact Registry
+      shell: bash
+      run: |-
+        docker tag ${{ inputs.image-name }}:latest ${{ inputs.registry }}/$GCP_PROJECT/${{ inputs.repository }}/${{ inputs.image-name }}:latest
+        docker tag ${{ inputs.image-name }}:latest ${{ inputs.registry }}/$GCP_PROJECT/${{ inputs.repository }}/${{ inputs.image-name }}:$GITHUB_SHA
+        docker push ${{ inputs.repository }}/$GCP_PROJECT/${{ inputs.repository }}/${{ inputs.image-name }}:latest
+        docker push ${{ inputs.repository }}/$GCP_PROJECT/${{ inputs.repository }}/${{ inputs.image-name }}:$GITHUB_SHA
